@@ -1,0 +1,55 @@
+section
+  h2 Async JSON 1
+  :javascript
+    function readJSON(filename, callback){
+      fs.readFile(filename, 'utf8', function (err, res){
+        if (err) return callback(err)
+        callback(null, JSON.parse(res))
+      })
+    }
+  ul.icons-ul
+    +bad.fragment Conflates the input with the output
+    +bad.fragment Doesn't work with control flow primatives
+    +bad.fragment Doesnt handle errors
+section
+  h2 Async JSON 2
+  :javascript
+    function readJSON(filename, callback){
+      fs.readFile(filename, 'utf8', function (err, res){
+        if (err) return callback(err)
+        try {
+          callback(null, JSON.parse(res))
+        } catch (ex) {
+          callback(ex)
+        }
+      })
+    }
+  ul.icons-ul
+    +bad.fragment Conflates the input with the output
+    +bad.fragment Doesn't work with control flow primatives
+    +good.fragment handles errors in <code>JSON.parse</code>
+    +bad.fragment Double handles errors in the callback
+  .fragment
+    :javascript
+      var n = 0
+      readJSON(filename, function (err, res){
+        throw new ('Unerlated error ' + (n++))
+      })
+section
+  h2 Async JSON 3
+  :javascript
+    function readJSON(filename, callback){
+      fs.readFile(filename, 'utf8', function (err, res){
+        if (err) return callback(err)
+        try {
+          res = JSON.parse(res)
+        } catch (ex) {
+          return callback(ex)
+        }
+        callback(null, res)
+      })
+    }
+  ul.icons-ul
+    +bad.fragment Conflates the input with the output
+    +bad.fragment Doesn't work with control flow primatives
+    +good.fragment But it does handle errors

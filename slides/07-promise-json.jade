@@ -1,0 +1,112 @@
+section
+  h2 Sync JSON
+  :javascript
+    function readJSONSync(filename){
+      return JSON.parse(fs.readFileSync(filename, 'utf8'))
+    }
+section
+  h2 Imagine
+  ul
+    li.fragment Asynchronous methods still return values
+    li.fragment The values cannot be used directly
+    li.fragment The values can be awaited
+section
+  h2 Promise
+  ul
+    li A promise represents the result of an asynchronous operation
+    li A promise can be pending, fulfilled or rejected
+  :javascript
+    function readFile(filename, enc){
+      return new Promise(function (fulfill, reject){
+        fs.readFile(filename, enc, function (err, res){
+          if (err) reject(err)
+          else fullfill(res)
+        })
+      })
+    }
+section
+  h2 Promise JSON A
+  :javascript
+    function readJSON(filename){
+      return new Promise(function (fulfill, reject){
+        readFile(filename, 'utf8').done(function (res){
+          try {
+            fullfill(JSON.parse(res))
+          } catch (ex) {
+            reject(ex)
+          }
+        }, reject)
+      })
+    }
+  ul.icons-ul
+    +good.fragment Doesn't conflate input with output
+    +bad.fragment Doesn't work with control flow primatives
+    +bad.fragment Requires extra work to handle errors
+section
+  p <code>.then</code> is to <code>.done</code>
+  p as
+  p <code>.map</code> is to <code>.forEach</code>
+section
+  h2 Promise JSON B
+  :javascript
+    function readJSON(filename){
+      return readFile(filename, 'utf8').then(function (res){
+        return JSON.parse(res)
+      })
+    }
+  .fragment
+    :javascript
+      function readJSON(filename){
+        return readFile(filename, 'utf8').then(JSON.parse)
+      }
+  ul.icons-ul
+    +good.fragment Doesn't conflate input with output
+    +bad.fragment Doesn't work with control flow primatives
+    +good.fragment Handles errors
+section
+  h2 Generator JSON
+  p What if yield could be used to "await" a promise
+  .fragment
+    :javascript
+      var readJSONSync = function (filename){
+        return JSON.parse(fs.readFileSync(filename, 'utf8'))
+      }
+      var readJSON = async(function *(filename){
+        return JSON.parse(yield readFile(filename, 'utf8'))
+      })
+  ul.icons-ul
+    +good.fragment Doesn't conflate input with output
+    +good.fragment Works with control flow primatives
+    +good.fragment Handles errors
+    +good.fragment Looks Asynchronous
+
+section
+  h2 A sequence of operations
+  :javascript
+    var get = async(function *(){
+      var left = yield readJSON('left.json')
+      var right = yield readJSON('right.json')
+      return {left: left, right: right}
+    })
+
+section
+  h2 Parallel operations
+  :javascript
+    var get = async(function *(){
+      var left = readJSON('left.json')
+      var right = readJSON('right.json')
+      return {left: yield left, right: yield right}
+    })
+
+section
+  h2 Try/Catch
+  :javascript
+    var get = async(function *(key){
+      if (cache.hasLive(key)) return cache.get(key)
+      try {
+        return yield getLive(key)
+      } catch (ex) {
+        if (cache.hasStale(key)) return cache.get(key)
+        throw ex
+      }
+    })

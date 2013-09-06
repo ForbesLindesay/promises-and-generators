@@ -1,0 +1,87 @@
+doctype html
+mixin bad()
+  li(attributes)
+    i.icon-remove
+    block
+mixin good()
+  li(attributes)
+    i.icon-ok
+    block
+html
+  head
+    meta(charset='utf-8')
+    title Promises and Generators: Control Flow Utopia
+    meta(name='description' content='A presentation about JavaScript promises and generators')
+    meta(name='author' content='Forbes Lindesay')
+    meta(name='apple-mobile-web-app-capable' conent='yes')
+    meta(name='apple-mobile-web-app-status-bar-style' content='black-translucent')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+    link(rel='stylesheet' href='/css/reveal.min.css')
+    link(rel='stylesheet' href='/css/theme/default.css')
+    link(rel='stylesheet' href='/css/zenburn.css')
+    link(rel='stylesheet' href='/font-awesome/css/index.css')
+
+    meta(name='stop' href='/css/print/paper.css')
+    meta(name='stop' href='/lib/font/league_gothic-webfont.woff')
+    meta(name='stop' href='/lib/font/league_gothic-webfont.ttf')
+    meta(name='stop' href='/lib/font/league_gothic-webfont.svg#LeagueGothicRegular')
+    meta(name='stop' href='/font-awesome/font/FontAwesome.otf')
+    meta(name='stop' href='/font-awesome/font/fontawesome-webfont.eot')
+    meta(name='stop' href='/font-awesome/font/fontawesome-webfont.svg')
+    meta(name='stop' href='/font-awesome/font/fontawesome-webfont.ttf')
+    meta(name='stop' href='/font-awesome/font/fontawesome-webfont.woff')
+
+    //- If the query includes 'print-pdf', use the PDF print sheet
+    script.
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    style.
+      .reveal h4 {
+        margin-top: 0.5em;
+        margin-bottom: 0.2em;
+      }
+      .reveal h2 {
+        font-size: 1.8em;
+      }
+      .reveal pre code {
+        font-size: 1.6em;
+        line-height: 0.95em;
+      }
+      .reveal .medium-code pre code {
+        font-size: 1.5em;
+      }
+      .reveal .small-code pre code {
+        font-size: 1.4em;
+      }
+      .reveal pre code, .reveal pre {
+        margin: 0;
+        max-height: none;
+        max-width: none;
+        width: auto;
+      }
+      .reveal .slides>section {
+        padding: 0;
+      }
+  body
+    .reveal
+      .slides
+        include slides/01-title.jade
+        include slides/02-sequence.jade
+        include slides/05-sync.jade
+        include slides/06-async.jade
+        include slides/07-promise-json.jade
+        include slides/08-how-it-works.jade
+        include slides/09-why-promise.jade
+        include slides/10-me.jade
+    script(src='/js/reveal.js')
+    script.
+      Reveal.initialize({
+        controls: false,
+        width: 1200,
+        height: 700,
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        margin: 0,
+        dependencies: []
+      })

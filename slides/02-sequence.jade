@@ -1,0 +1,58 @@
+section
+  h2 Sequence 1
+  :javascript
+    function count(n){
+      var res = []
+      for (var x = 0; x < n; x++) {
+        res.push(x)
+      }
+      return res
+    }
+    var res = count(5)
+    for (var i = 0; i < res.length; i++) {
+      console.log(res[i])
+    }
+
+section
+  h2 Sequence 2
+  :javascript
+    function count(){
+      var res = []
+      for (var x = 0; true; x++) {
+        res.push(x)
+      }
+      return res
+    }
+    var res = count(5)
+    for (var i = 0; i < res.length; i++) {
+      console.log(res[i])
+    }
+
+section
+  h2 Sequence 3
+  :javascript
+    function* count(){
+      for (var x = 0; true; x++) {
+        yield x
+      }
+    }
+
+    for (var x of count()) {
+      console.log(x)
+    }
+section
+  h2 Take
+  :javascript
+    function* take(list, n){
+      var i = 0
+      for (var x of list) {
+        if (n === i++) {
+          return
+        }
+        yield x
+      }
+    }
+
+    for (var x of take(count(), 5)) {
+      console.log(x)
+    }

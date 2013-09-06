@@ -1,0 +1,61 @@
+section
+  h2 How it works - Fulfilling
+  ul
+    li <code>yield foo</code> is an expression
+    li.fragment A generator can be manually operated via <code>.next(value)</code>
+  .fragment
+    :javascript
+      function* demo() {
+        var res = yield 10
+        assert(res === 32)
+        return 42
+      }
+  .fragment
+    :javascript
+      var d = demo()
+      var resA = d.next()
+      // => {value: 10, done: false}
+      var resB = d.next(32)
+      // => {value: 42, done: true}
+      // d.next() - THROWS!!!
+section
+  h2 How it works - rejecting
+  ul
+    li A generator can be sent an exception via <code>.throw(error)</code>
+  .fragment
+    :javascript
+      var sentinel = new Error('foo')
+      function* demo() {
+        try {
+          yield 10
+        } catch (ex) {
+          assert(ex === sentinel)
+        }
+      }
+  .fragment
+    :javascript
+      var d = demo()
+      d.next()
+      // => {value: 10, done: false}
+      d.throw(sentinel)
+section
+  h2 Putting it all together
+  .small-code
+    :javascript
+      function async(makeGenerator){
+        return function (){
+          var generator = makeGenerator.apply(this, arguments)
+
+          function handle(result){ // { done: [Boolean], value: [Object] }
+            if (result.done) return result.value
+
+            return result.value.then(function (res){
+              return handle(generator.next(res))
+            }, function (err){
+              return handle(generator.throw(err))
+            })
+          }
+
+          return handle(generator.next())
+        }
+      }

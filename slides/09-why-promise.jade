@@ -1,0 +1,85 @@
+section
+  h1 Why Promises?
+section
+  h2 Streamline
+  :javascript
+    function readJSON(filename, _){
+      return JSON.parse(fs.readFile(filename, 'utf8', _))
+    }
+  ul.icons-ul
+    +good.fragment Works with control flow primatives
+    +good.fragment Handles errors
+    +bad.fragment Conflates input with output
+    +bad.fragment Looks entirely synchronous
+    +bad.fragment Compiles to pretty ugly code
+section
+  h2 Suspend
+  .medium-code
+    :javascript
+      suspend(function *(resume){
+        return JSON.parse(yield fs.readFile(filename, 'utf8', resume))
+      })
+  ul.icons-ul
+    +good.fragment Works with control flow primatives
+    +good.fragment Handles errors
+    +bad.fragment Conflates input with output
+    +bad.fragment Isn't doing what it looks like
+    +bad.fragment Can't do parallel operation
+section
+  h2 CO
+  :javascript
+    function readFile(filename, encoding){
+      return function (callback){
+        return fs.readFile(filename, encoding, callback)
+      }
+    }
+    co(function *(){
+      return JSON.parse(yield readFile(filename, 'utf8'))
+    })
+  ul.icons-ul
+    +good.fragment Works with control flow primatives
+    +good.fragment Handles errors
+    +bad.fragment Can't do parallel operation
+    +bad.fragment Can't share and cache async operations
+
+section
+  h2 Conclusion A
+  p Promises let us turn
+  :javascript
+    function readJSON(filename, callback){
+      fs.readFile(filename, 'utf8', function (err, res){
+        if (err) return callback(err)
+        try {
+          res = JSON.parse(res)
+        } catch (ex) {
+          return callback(ex)
+        }
+        callback(null, res)
+      })
+    }
+  p INTO
+  .fragment
+    :javascript
+      function readJSON(filename){
+        return readFile(filename, 'utf8').then(JSON.parse)
+      }
+
+section
+  h2 Conclusion B
+  p Generators let us turn
+  :javascript
+    function get(filename){
+      return readJSON('left.json').then(function (left){
+        return readJSON('right.json').then(function (right){
+          return {left: left, right: right}
+        })
+      })
+    }
+  p INTO
+  .fragment
+    :javascript
+      var get = async(function *(){
+        var left = yield readJSON('left.json')
+        var right = yield readJSON('right.json')
+        return {left: left, right: right}
+      })
