@@ -76,6 +76,7 @@ section
       })
   ul.icons-ul
     +good.fragment Doesn't conflate input with output
+    //- '
     +good.fragment Works with control flow primatives
     +good.fragment Handles errors
     +good.fragment Looks Asynchronous
@@ -101,12 +102,33 @@ section
 section
   h2 Try/Catch
   :javascript
-    var get = async(function *(key){
-      if (cache.hasLive(key)) return cache.get(key)
+    var tryGet = async(function *(key, defaultValue){
+      var result
       try {
-        return yield getLive(key)
+        result = yield get(key)
       } catch (ex) {
-        if (cache.hasStale(key)) return cache.get(key)
-        throw ex
+        result = defaultValue
+      }
+      return result
+    })
+
+section
+  h2 For
+  :javascript
+    var uploadDocuments = async(function *(documents){
+      for (var document of documents) {
+        yield upload(document)
       }
     })
+  .fragment
+    :javascript
+      var uploadDocumentsParallel = async(function *(documents){
+        var operations = []
+        for (var document of documents) {
+          operations.push(upload(document))
+        }
+        for (var operation of operations) {
+          yield operation
+        }
+      })
+
